@@ -14,3 +14,10 @@ def test_generates_create_table_statements():
     assert "CREATE TABLE fact_billing" in ddl
     assert "REFERENCES dim_client(dim_client_key)" in ddl
     assert "total_amount NUMERIC(12,2)" in ddl
+
+
+def test_public_api_exports_column_role():
+    import star_schema_builder
+
+    assert hasattr(star_schema_builder, "ColumnRole")
+    assert "ColumnRole" in star_schema_builder.__all__
