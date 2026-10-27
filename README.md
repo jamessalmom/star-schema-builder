@@ -1,14 +1,8 @@
 # star-schema-builder
 
-Turns a flat operational table description into a **Kimball-style star
-schema** (fact + dimension tables): you classify each column once
-(measure / dimension attribute / degenerate), and it generates the
-dimensional model and the `CREATE TABLE` DDL.
+Turns the description of a flat operational table into a Kimball-style star schema. You classify each column once (measure, dimension attribute or degenerate dimension) and it builds the fact and dimension tables and prints the `CREATE TABLE` statements.
 
-Built from the recurring migration of "we have a flat billing/operations
-table feeding a management dashboard, we need a real fact/dimension model"
-— the exact step taken when moving a BI portal off static exports and onto
-a proper warehouse schema.
+I wrote it for a situation that keeps coming back in BI work: a dashboard reads from one wide billing or operations table, and at some point that table needs to become a proper fact/dimension model.
 
 ## Usage
 
@@ -36,13 +30,21 @@ CREATE TABLE dim_client (
     client_document TEXT
 );
 
+CREATE TABLE dim_branch (
+    dim_branch_key SERIAL PRIMARY KEY,
+    branch_name TEXT
+);
+
 CREATE TABLE fact_billing (
     fact_id BIGSERIAL PRIMARY KEY,
     dim_client_key INTEGER REFERENCES dim_client(dim_client_key),
+    dim_branch_key INTEGER REFERENCES dim_branch(dim_branch_key),
     invoice_number TEXT,
     total_amount NUMERIC(12,2)
 );
 ```
+
+The DDL targets PostgreSQL (`SERIAL`, `BIGSERIAL`).
 
 ## Development
 
@@ -54,4 +56,4 @@ ruff check .
 
 ## License
 
-MIT — see [LICENSE](LICENSE).
+MIT, see [LICENSE](LICENSE).
